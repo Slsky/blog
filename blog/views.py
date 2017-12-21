@@ -1,7 +1,8 @@
 
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
 
 from .models import Topic, Entry
 from .forms import TopicForm, EntryForm
@@ -10,19 +11,25 @@ def index(request):
     """Домашняя страница приложения Блога"""
     return render(request, 'blog/index.html')
 
+@login_required
 def topics(request):
     """Выводит список тем."""
-    topics = Topic.objects.order_by('date_added')
+    topics = Topic.objects.filter(owner=request.user).order_by('date_added')
     context = {'topics': topics}
     return render(request, 'blog/topics.html', context)
 
+@login_required
 def topic(request, topic_id):
     """Вывод одну тему и все её записи"""
     topic = Topic.objects.get(id=topic_id)
+    # Проверка принадлежности темы автору
+    if topic.owner != request.user:
+        raise Http404
     entries = topic.entry_set.order_by('-date_added')
     context = {'topic': topic, 'entries': entries}
     return render(request, 'blog/topic.html', context)
 
+@login_required
 def new_topic(request):
     """Выводит страницу для добавления новой темы"""
     if request.method != 'POST':
@@ -32,12 +39,16 @@ def new_topic(request):
         form = TopicForm(request.POST)
         # Проверяем переданные данные
         if form.is_valid():
-             form.save()
+            # Связывает темы с пользователем
+             new_topic = form.save(commit=False)
+             new_topic.owner = request.user
+             new_topic.save()
              return HttpResponseRedirect(reverse('blog:topics'))
 
     context = {'form': form}
     return render(request, 'blog/new_topic.html', context)
 
+@login_required
 def new_entry(request, topic_id):
     """Выводит страницу для добавление новой записи"""
     topic = Topic.objects.get(id=topic_id)
@@ -56,10 +67,14 @@ def new_entry(request, topic_id):
     context = {'topic': topic,'form': form }
     return render(request, 'blog/new_entry.html', context)
 
+@login_required
 def edit_entry(request, entry_id):
     """Страница для редактирования запией"""
     entry = Entry.objects.get(id=entry_id)
     topic = entry.topic
+        # Проверка соответствия темы пользователю
+    if topic.owner != request.user:
+        raise Http404
         # Если пустая форма
     if request.method != 'POST':
         form = EntryForm(instance=entry)

@@ -1,0 +1,12 @@
+{% extends "blog/base.html" %}
+{% block content %}
+  {% if form.errors %}
+  <p>Вы набрали неверный логин или пароль. Пожалуйста скорректируйте данные и повторите пароль снова.</p>
+  {% endif %}
+  <form action="{% url 'user:login' %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" name="button">Войти</button>
+    <input type="hidden" name="next" value="{% url 'blog:index' %}"/>
+  </form>
+{% endblock content %}
