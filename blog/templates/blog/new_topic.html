@@ -1,12 +1,10 @@
 {% extends "blog/base.html" %}
 
 {% block content %}
-
   <p>Добавить новую тему:</p>
   <form action="{% url 'blog:new_topic' %}" method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" name="Отправить">Добавить тему</button>
   </form>
-
-{% endblock content %}
+  {% endblock content %}

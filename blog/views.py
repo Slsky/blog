@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
-from .models import Topic
+from .models import Topic, Entry
 from .forms import TopicForm, EntryForm
 
 def index(request):
@@ -55,6 +55,23 @@ def new_entry(request, topic_id):
 
     context = {'topic': topic,'form': form }
     return render(request, 'blog/new_entry.html', context)
+
+def edit_entry(request, entry_id):
+    """Страница для редактирования запией"""
+    entry = Entry.objects.get(id=entry_id)
+    topic = entry.topic
+        # Если пустая форма
+    if request.method != 'POST':
+        form = EntryForm(instance=entry)
+    else:
+        # Отправка данных POST; обработать запрос
+        form = EntryForm(instance=entry, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('blog:topic',args=[topic.id]))
+
+    context = {'entry': entry, 'topic': topic, 'form': form}
+    return render(request, 'blog/edit_entry.html', context )
 
 
 # Create your views here.
