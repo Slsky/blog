@@ -1,16 +1,22 @@
 {% extends "blog/base.html" %}
 
-{% block content %}
+{% block header %}
+  <h1>Темы</h1>
+{% endblock header %}
 
-	<p>Тема</p>
+{% block content %}
 
 	<ul>
 		{% for topic in topics %}
-		   <li><a href="{% url 'blog:topic' topic.id %}"> {{ topic }} </a></li>
+		   <li>
+				 <h3>
+				 	<a href="{% url 'blog:topic' topic.id %}"> {{ topic }} </a>
+				</h3>
+			</li>
 		{% empty %}
-		   <li>Пока нет добавленных тем</li>
+		   <li><h3>Пока нет добавленных тем</h3></li>
 		{% endfor %}
 	</ul>
-	<a href="{% url 'blog:new_topic' %}">Добавить запись:</a>
+	<h3><a href="{% url 'blog:new_topic' %}">Добавить запись:</a></h3>
 
 {% endblock content %}

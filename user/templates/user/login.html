@@ -1,12 +1,18 @@
 {% extends "blog/base.html" %}
+{% load bootstrap3 %}
+{% block header %}
+  <h2>Зарегистрируйся</h2>
+{% endblock header %}
 {% block content %}
   {% if form.errors %}
   <p>Вы набрали неверный логин или пароль. Пожалуйста скорректируйте данные и повторите пароль снова.</p>
   {% endif %}
-  <form action="{% url 'user:login' %}" method="post">
+  <form action="{% url 'user:login' %}" method="post" class="form">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" name="button">Войти</button>
+    {% bootstrap_form form %}
+      {% buttons %}
+        <button type="submit" name="button" class="btn btn-primary">Войти</button>
+      {% endbuttons %}
     <input type="hidden" name="next" value="{% url 'blog:index' %}"/>
   </form>
 {% endblock content %}

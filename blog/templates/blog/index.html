@@ -1,5 +1,19 @@
 {% extends "blog/base.html" %}
 
+{% block header %}
+   <div class='jumbotron'>
+      <h1>Твой пресональный блог</h1>
+   </div>
+{% endblock header %}
+
 {%block content%}
-   <h1>Index page</h1>
+   <h2>
+      <a href="{% url 'user:register' %}">Заведи аккаунт!</a>
+   </h2>
+   <h2>
+      Веди свой дневник, пусть ничего больше не ускользнет от твоего внимания!
+   </h2>
+   <h2>
+      Групируй свои записи по темам для легкой навигации.
+   </h2>
 {% endblock content %}
